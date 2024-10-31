@@ -1,4 +1,3 @@
-
 <?php 
 require_once 'core/models.php'; 
 require_once 'core/handleForms.php'; 

@@ -15,16 +15,17 @@ function insertStore($pdo, $store_name, $locations, $contact_name) {
 	}
 }
 
-function updateStore($pdo, $store_name, $locations, $contact_name, $store_id) {
+function updateStore($pdo, $store_name, $locations, $contact_name, $updated_by, $store_id) {
 
 	$sql = "UPDATE stores
 				SET store_name = ?,
 					locations = ?,
-					contact_name = ?
+					contact_name = ?,
+					updated_by = ?
 				WHERE store_id = ?
 			";
 	$stmt = $pdo->prepare($sql);
-	$executeQuery = $stmt->execute([$store_name, $locations, $contact_name, $store_id]);
+	$executeQuery = $stmt->execute([$store_name, $locations, $contact_name, $updated_by, $store_id]);
 	
 	if ($executeQuery) {
 		return true;
@@ -90,22 +91,24 @@ function insertCustomer($pdo, $customer_firstname, $customer_lastname, $email, $
 	}
 }
 
-function updateCustomer($pdo, $customer_firstname, $customer_lastname, $email, $phone_number, $store_id, $customer_id) {
-	$sql = "UPDATE customers
-			SET customer_firstname = ?,
-				customer_lastname = ?,
-				email = ?,
-				phone_number = ?,
-				store_id = ?
-			WHERE customer_id = ?
-			";
-	$stmt = $pdo->prepare($sql);
-	$executeQuery = $stmt->execute([$customer_firstname, $customer_lastname, $email, $phone_number, $store_id, $customer_id]);
-
-	if ($executeQuery) {
-		return true;
-	}
+function updateCustomer($pdo, $customer_firstname, $customer_lastname, $email, $phone_number, $store_id, $customer_id, $updated_by) {
+    $sql = "UPDATE customers
+            SET customer_firstname = ?,
+                customer_lastname = ?,
+                email = ?,
+                phone_number = ?,
+                store_id = ?,
+                updated_by = ?
+            WHERE customer_id = ?";
+    $stmt = $pdo->prepare($sql);
+    if (!$stmt->execute([$customer_firstname, $customer_lastname, $email, $phone_number, $store_id, $updated_by, $customer_id])) {
+        $errorInfo = $stmt->errorInfo();
+        echo "SQL Error: " . $errorInfo[2]; 
+        return false;
+    }
+    return true;
 }
+
 
 function deleteCustomer($pdo, $customer_id) {
     $sql = "DELETE FROM customers WHERE customer_id = ?";
@@ -113,10 +116,12 @@ function deleteCustomer($pdo, $customer_id) {
     $executeQuery = $stmt->execute([$customer_id]);
 
     if ($executeQuery) {
-        return true;
+        return true; 
     }
     return false;
 }
+
+
 
 function getAllCustomers($pdo) {
 	$sql = "SELECT * FROM customers";
@@ -141,7 +146,7 @@ function getCustomerByID($pdo, $customer_id) {
 // New User Management Code
 require_once 'dbConfig.php';
 
-function insertNewUserfunction($pdo, $username, $first_name, $password)
+function insertNewUserfunction($pdo, $username, $password)
  {
 
 	$checkUserSql = "SELECT * FROM user_accounts WHERE username = ?";
@@ -150,9 +155,9 @@ function insertNewUserfunction($pdo, $username, $first_name, $password)
 
 	if ($checkUserSqlStmt->rowCount() == 0) {
 
-		$sql = "INSERT INTO user_accounts (username, first_name, last_name, password) VALUES(?,?,?,?)";
+		$sql = "INSERT INTO user_accounts (username, password) VALUES(?,?,?,?)";
 		$stmt = $pdo->prepare($sql);
-		$executeQuery = $stmt->execute([$username, $first_name, $last_name, $password]);
+		$executeQuery = $stmt->execute([$username, $password]);
 
 		if ($executeQuery) {
 			$_SESSION['message'] = "User successfully inserted";
@@ -203,19 +208,19 @@ function insertNewUser($pdo, $username, $password) {
         $stmt->bindParam(':password', $password);
         return $stmt->execute();
     } catch (PDOException $e) {
-        // Handle error, maybe log it or display a user-friendly message
         return false;
     }
 }
 
 function getAllUsers($pdo) {
-	$sql = "SELECT * FROM user_accounts";
-	$stmt = $pdo->prepare($sql);
-	$executeQuery = $stmt->execute();
+    $sql = "SELECT * FROM user_accounts";
+    $stmt = $pdo->prepare($sql);
+    $executeQuery = $stmt->execute();
 
-	if ($executeQuery) {
-		return $stmt->fetchAll();
-	}
+    if ($executeQuery) {
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);  // Use associative array for easier access
+    }
+    return [];  // Return an empty array if there are no users
 }
 
 function getUserByID($pdo, $user_id) {
@@ -225,6 +230,14 @@ function getUserByID($pdo, $user_id) {
 	if ($executeQuery) {
 		return $stmt->fetch();
 	}
+}
+
+function getUserIDByUsername($pdo, $username) {
+	$sql = "SELECT  user_id FROM user_accounts WHERE username = ?";
+	$stmt = $pdo->prepare($sql);
+	$stmt->execute([$username]);
+	$row = $stmt->fetch();
+	return $row ? $row['user_id'] : null;
 }
 
 ?>

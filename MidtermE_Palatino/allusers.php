@@ -1,54 +1,39 @@
+<?php
+session_start();
+require_once 'core/models.php';  // Ensure the models file is included
+require_once 'core/dbConfig.php'; // Include the database configuration file
 
-<?php 
-require_once 'core/models.php'; 
-require_once 'core/handleForms.php'; 
-
-if (!isset($_SESSION['username'])) {
-	header("Location: login.php");
-}
+// Fetch all users
+$users = getAllUsers($pdo);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-	<style>
-		body {
-			font-family: "Arial";
-		}
-		input {
-			font-size: 1.5em;
-			height: 50px;
-			width: 200px;
-		}
-		table, th, td {
-			border:1px solid black;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
 </head>
 <body>
-	<?php if (isset($_SESSION['message'])) { ?>
-		<h1 style="color: red;"><?php echo $_SESSION['message']; ?></h1>
-	<?php } unset($_SESSION['message']); ?>
+    <?php include 'navbar.php'; ?>  <!-- Include your navigation bar -->
 
-
-
-	<?php if (isset($_SESSION['username'])) { ?>
-		<h1>Hello there!! <?php echo $_SESSION['username']; ?></h1>
-		<?php include 'navbar.php'; ?>
-	<?php } else { echo "<h1>No user logged in</h1>";}?>
-
-	<h3>Users List</h3>
-	<ul>
-		<?php $getAllUsers = getAllUsers($pdo); ?>
-		<?php foreach ($getAllUsers as $row) { ?>
-			<li>
-				<a href="viewuser.php?user_id=<?php echo $row['user_id']; ?>"><?php echo $row['username']; ?></a>
-			</li>
-		<?php } ?>
-	</ul>
-
-	
+    <h1>All Users</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($users as $user): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($user['user_id']); ?></td>
+                    <td><?php echo htmlspecialchars($user['username']); ?></td>
+                    <td><?php echo htmlspecialchars($user['date_added']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 </body>
 </html>

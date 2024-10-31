@@ -23,7 +23,7 @@ require_once 'core/handleForms.php';
 	</style>
 </head>
 <body>
-	<?php include 'navbar.php'; ?>
+	
 	<h1>Register here!</h1>
 	<?php if (isset($_SESSION['message'])) { ?>
 		<h1 style="color: red;"><?php echo $_SESSION['message']; ?></h1>

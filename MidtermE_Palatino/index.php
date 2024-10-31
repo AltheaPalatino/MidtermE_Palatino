@@ -36,15 +36,7 @@ if (!isset($_SESSION['username'])) {
 		<?php include 'navbar.php'; ?>
 	<?php } else { echo "<h1>No user logged in</h1>";}?>
 
-	<h3>Users List</h3>
-	<ul>
-		<?php $getAllUsers = getAllUsers($pdo); ?>
-		<?php foreach ($getAllUsers as $row) { ?>
-			<li>
-				<a href="viewuser.php?user_id=<?php echo $row['user_id']; ?>"><?php echo $row['username']; ?></a>
-			</li>
-		<?php } ?>
-	</ul>
+	<!-- Removed Users List Section -->
 
 	<h1 style="color: red;">Welcome To Explore Your Beauty Destination. Add a Store!</h1>
 	<form action="core/handleForms.php" method="POST">

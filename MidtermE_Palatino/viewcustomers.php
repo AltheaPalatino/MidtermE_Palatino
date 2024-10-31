@@ -15,8 +15,7 @@
 </style>
 <body>
 	<a href="index.php">Return to home</a>
-	<a href="login.php"> Back to login</a>
-
+	
 	<?php 
 	$getStoreInfoByID = getStoreInfoByID($pdo, $_GET['store_id']); 
 	if ($getStoreInfoByID !== false) { 
@@ -55,6 +54,9 @@
 	    <th>Email</th>
 	    <th>Phone Number</th>
 	    <th>Date Added</th>
+	    <th>Updated By</th>
+	    <th>Last Updated</th>
+
 	    <th>Action</th>
 	  </tr>
 
@@ -70,6 +72,8 @@
 	  	<td><?php echo $row['email']; ?></td>	  	
 	  	<td><?php echo $row['phone_number']; ?></td>
 	  	<td><?php echo $row['date_added']; ?></td>
+	  	<td><?php echo $row['updated_by']; ?></td>
+	  	<td><?php echo $row['last_updated']; ?></td>
 	  	<td>
 	  		<a href="editcustomers.php?customer_id=<?php echo $row['customer_id']; ?>&store_id=<?php echo $_GET['store_id']; ?>">Edit</a>
 
